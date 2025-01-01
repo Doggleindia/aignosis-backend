@@ -6,11 +6,11 @@ dotenv.config();
 
 const razorpay = new Razorpay({
     key_id: process.env.KEY_ID,
-    key_secret: process.env.MONGO_URIS,
+    key_secret: process.env.PAY_SECRET,
 });
 
 console.log('Razorpay Key ID:', process.env.KEY_ID);  // Debugging the key_id
-console.log('Razorpay Key Secret:', process.MONGO_URIS);  // Debugging the key_secret
+console.log('Razorpay Key Secret:', process.env.RZP_TEST);  // Debugging the key_secret
 
 
 
