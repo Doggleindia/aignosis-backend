@@ -6,6 +6,7 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import authRoutes from './routes/authRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
+import profileRoutes from './routes/profileRoutes.js';
 import { connectDB } from './config/db.js';
 
 
@@ -30,6 +31,7 @@ connectDB();
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/profiles', profileRoutes);
 
 // Health Check Endpoint
 app.get('/', (req, res) => {
