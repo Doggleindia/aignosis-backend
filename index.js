@@ -29,6 +29,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 connectDB();
 
 // Routes
+app.use('/verifyJwt', authRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/profiles', profileRoutes);

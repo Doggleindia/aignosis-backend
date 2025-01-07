@@ -13,6 +13,11 @@ export const authenticateJWT = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
+    res.status(200).json({
+      success: true,
+      message: 'Token is valid.',
+      user: decoded, // Optional: Include decoded user info if needed
+    });
     next();
   } catch (error) {
     return res.status(401).json({
