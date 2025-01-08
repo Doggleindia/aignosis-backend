@@ -17,6 +17,7 @@ console.log('Razorpay Key Secret:', process.env.RZP_TEST);  // Debugging the key
 // Create Order
 export const createOrder = async (req, res) => {
     const { amount } = req.body;
+    console.log(req.body) //try to find the error
     const options = {
         amount: amount * 100, // Convert to smallest currency unit
         currency: "INR",
@@ -24,9 +25,9 @@ export const createOrder = async (req, res) => {
     };
     try {
         const order = await razorpay.orders.create(options);
-        res.status(201).json(order);
+        return res.status(201).json(order); //add return
     } catch (error) {
-        res.status(500).json({ error: 'Failed to create order' });
+        return res.status(500).json({ error: 'Failed to create order' });
     }
 };
 
@@ -51,8 +52,8 @@ export const verifyPayment = async (req, res) => {
         });
 
         await payment.save();
-        res.status(200).json({ message: 'Payment verified successfully' });
+        return res.status(200).json({ message: 'Payment verified successfully' });
     } else {
-        res.status(400).json({ error: 'Invalid signature' });
+        return res.status(400).json({ error: 'Invalid signature' });
     }
 };

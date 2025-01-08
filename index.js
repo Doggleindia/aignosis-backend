@@ -39,6 +39,15 @@ app.get('/', (req, res) => {
   res.status(200).json({ message: 'Health Check!' });
 });
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack); // Log the full stack trace for debugging
+  if (!res.headersSent) {
+     return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
