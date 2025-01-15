@@ -1,6 +1,6 @@
 import express from 'express';
 import { sendOtp, verifyOtp } from '../controller/authController.js';
-import { verifyJwt } from '../controller/verifyjwt.js';
+import { verifyJwt } from '../controller/verifyJwt.js';
 
 const router = express.Router();
 

@@ -1,14 +1,13 @@
 import jwt from 'jsonwebtoken';
 import { OtpModel } from '../model/otpModel.js';
 import { UserModel } from '../model/userModel.js';
-import { ProfileModel } from '../model/profileModel.js';
-import axios from 'axios';
-
-
+import { PubSub } from '@google-cloud/pubsub';
 import dotenv from 'dotenv';
-dotenv.config(); // Make sure this is at the top of your file to load environment variables
+dotenv.config();
 
-const twoFactorApiKey =  '50bd2fc8-c749-11ef-8b17-0200cd936042'; // Use the API key from your .env file
+// GCP Pub/Sub Setup
+const pubSubClient = new PubSub();
+const topicName = process.env.GCP_TOPIC_NAME; // Set this in .env
 
 export const sendOtp = async (req, res) => {
   const { phoneNumber } = req.body;
@@ -24,41 +23,32 @@ export const sendOtp = async (req, res) => {
       return res.status(400).json({ message: 'OTP already sent to this phone number.' });
     }
 
-    const response = await axios.get(
-      `https://2factor.in/API/V1/${twoFactorApiKey}/SMS/${phoneNumber}/AUTOGEN/OTP1`
-    );
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000); // Generate 6-digit OTP
+    const messageData = {
+      phoneNumber,
+      otp,
+    };
 
-    if (response.data.Status === 'Success') {
-      try {
-        await OtpModel.create({
-          phoneNumber,
-          requestId: response.data.Details, // Save the request ID for verification
-        });
+    // Publish OTP message to GCP Pub/Sub
+    const dataBuffer = Buffer.from(JSON.stringify(messageData));
+    await pubSubClient.topic(topicName).publishMessage({ data: dataBuffer });
 
-        res.status(200).json({
-          message: 'OTP sent successfully.',
-          requestId: response.data.Details,
-          status:true // Return requestId to client if needed
-        });
-      } catch (dbError) {
-        console.error('Error saving OTP to database:', dbError);
-        res.status(500).json({
-          message: 'OTP sent but failed to save in database.',
-          error: dbError.message,
-        });
-      }
-    } else {
-      res.status(500).json({
-        message: 'Failed to send OTP.',
-        error: response.data.Details,
-      });
-    }
+    // Save OTP request in the database
+    await OtpModel.create({
+      phoneNumber,
+      otp,
+    });
+
+    res.status(200).json({
+      message: 'OTP sent successfully.',
+      status: true,
+    });
   } catch (error) {
     console.error('Error sending OTP:', error);
     res.status(500).json({ message: 'Error sending OTP.', error: error.message });
   }
 };
-
 
 export const verifyOtp = async (req, res) => {
   const { phoneNumber, otp } = req.body;
@@ -68,39 +58,28 @@ export const verifyOtp = async (req, res) => {
   }
 
   try {
-    // Retrieve OTP record using phoneNumber
     const record = await OtpModel.findOne({ phoneNumber });
 
-    if (!record || !record.requestId) {
-      return res.status(404).json({ message: 'OTP request not found.' });
+    if (!record || record.otp !== otp) {
+      return res.status(401).json({ message: 'Invalid OTP.' });
     }
 
-    // Proceed with OTP verification with the 2Factor API
-    const response = await axios.get(
-      `https://2factor.in/API/V1/${twoFactorApiKey}/SMS/VERIFY/${record.requestId}/${otp}`
-    );
+    let user = await UserModel.findOne({ phoneNumber });
 
-    if (response.data.Status === 'Success') {
-      let user = await UserModel.findOne({ phoneNumber });
-
-      if (!user) {
-        user = await UserModel.create({ phoneNumber });
-      }
-
-      const token = jwt.sign({ phoneNumber, id: user._id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRATION || '1h',
-      });
-
-      // Optionally delete OTP record after successful verification
-      await OtpModel.deleteOne({ phoneNumber });
-
-      res.status(200).json({
-        message: 'OTP verified successfully.',
-        token,
-      });
-    } else {
-      res.status(401).json({ message: 'Invalid OTP.', error: response.data.Details });
+    if (!user) {
+      user = await UserModel.create({ phoneNumber });
     }
+
+    const token = jwt.sign({ phoneNumber, id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRATION || '1h',
+    });
+
+    await OtpModel.deleteOne({ phoneNumber });
+
+    res.status(200).json({
+      message: 'OTP verified successfully.',
+      token,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error verifying OTP.', error: error.message });

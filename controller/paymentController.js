@@ -9,8 +9,8 @@ const razorpay = new Razorpay({
     key_secret: process.env.RZP_TEST,
 });
 
-console.log('Razorpay Key ID:', process.env.KEY_ID);  // Debugging the key_id
-console.log('Razorpay Key Secret:', process.env.RZP_TEST);  // Debugging the key_secret
+//console.log('Razorpay Key ID:', process.env.KEY_ID);  // Debugging the key_id
+//console.log('Razorpay Key Secret:', process.env.RZP_TEST);  // Debugging the key_secret
 
 
 

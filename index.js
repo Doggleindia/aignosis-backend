@@ -12,7 +12,7 @@ import { connectDB } from './config/db.js';
 
 // Load environment variables
 dotenv.config();
-console.log('Razorpay Key Secret:', process.env.RZP_TEST);
+//console.log('Razorpay Key Secret:', process.env.RZP_TEST);
 // console.log("all env url",process.env);  
 const app = express();
 const PORT = process.env.PORT || 5500;
