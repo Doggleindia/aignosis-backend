@@ -6,7 +6,7 @@ const ProfileSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'users',  // Name of the user collection/model
-      
+      required: true,
     },
     name: { type: String, required: true },
     username: { type: String, required: true },

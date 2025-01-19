@@ -6,8 +6,9 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import otpRoutes from './routes/otpRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
-import profileRoutes from './routes/profileRoutes.js';  // Profile routes
+import profileRoutes from './routes/profileRoutes.js'; // Profile routes
 import testRoutes from './routes/testRoutes.js';
+import s3Routes from './routes/s3Routes.js'; // S3 Routes
 import { connectDB } from './config/db.js';
 
 const app = express();
@@ -24,8 +25,9 @@ connectDB();
 // API routes
 app.use('/api/otp', otpRoutes);
 app.use('/api/payment', paymentRoutes);
-app.use('/api/profiles', profileRoutes);  // Profile routes
+app.use('/api/profiles', profileRoutes); // Profile routes
 app.use('/api/test', testRoutes);
+app.use('/api/s3', s3Routes); // S3 Routes
 
 // Health Check Endpoint
 app.get('/', (req, res) => {

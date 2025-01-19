@@ -4,14 +4,17 @@ import cloudinary from '../config/cloudinary.js';
 // Add a new profile
 export const addProfile = async (req, res) => {
   const { name, username, dob, age, gender } = req.body;
-  const userId = req.user?.id;  // Extract the user ID from the token
+  const userId = req.user?.id;
 
-  
   if (!req.file) {
     return res.status(400).json({ message: 'Profile picture is required.' });
   }
 
   try {
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID not found in token.' });
+    }
+
     const profileCount = await ProfileModel.countDocuments({ userId });
     if (profileCount >= 5) {
       return res.status(400).json({ message: 'Maximum of 5 profiles allowed.' });
@@ -27,7 +30,7 @@ export const addProfile = async (req, res) => {
 
         try {
           const profile = await ProfileModel.create({
-            userId,  // Store the user ID as ObjectId reference
+            userId,
             name,
             username,
             dob,
@@ -48,6 +51,7 @@ export const addProfile = async (req, res) => {
     res.status(500).json({ message: 'Error adding profile.', error: error.message });
   }
 };
+
 
 
 // Fetch profiles for a user

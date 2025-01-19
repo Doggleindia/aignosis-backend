@@ -88,14 +88,16 @@ export const verifyOtp = async (req, res) => {
       // If user doesn't exist, create a new user
       user = await UserModel.create({
         email,
+        phoneNumber: "",
         emailVerified: true, // Set the emailVerified flag to true after OTP verification
       });
-    }
-
+    }    
     // Generate a JWT token (for user authentication)
-    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRATION || '1h',
-    });
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRATION || '1h' }
+    );
 
     // Delete OTP session after successful verification
     await OtpModel.deleteOne({ email });
