@@ -1,51 +1,19 @@
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
 
-dotenv.config();
-
-export const authenticateJWT = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({
-      message: 'Authentication required. Redirecting to login.',
-      redirect: '/api/auth/login',
-    });
-  }
-
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    res.status(200).json({
-      success: true,
-      message: 'Token is valid.',
-      user: decoded, // Optional: Include decoded user info if needed
-    });
-    next();
-  } catch (error) {
-    return res.status(401).json({
-      message: 'Invalid or expired token. Redirecting to login.',
-      redirect: '/api/auth/login',
-    });
-  }
-};
-
-// Moved outside and exported
+// Middleware to verify JWT token
 export const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+  const token = req.headers.authorization?.split(' ')[1]; // Extract token from "Authorization: Bearer <token>"
 
   if (!token) {
     return res.status(403).json({ message: 'No token provided.' });
   }
 
   try {
-    console.log('Verifying token:', token); // Debug log
-    console.log('JWT Secret:', process.env.JWT_SECRET); // Debug log
+    // Verify token with secret
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
+    req.user = decoded; // Attach decoded user info to the request
+    next();  // Proceed to the next middleware or route handler
   } catch (error) {
-    console.error('Token verification error:', error.message); // Debug log
-    return res.status(401).json({ message: 'Invalid token.' });
+    res.status(401).json({ message: 'Invalid or expired token.', error: error.message });
   }
 };

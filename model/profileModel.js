@@ -1,36 +1,22 @@
 import mongoose from 'mongoose';
 
-const profileSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+const ProfileSchema = new mongoose.Schema(
+  {
+    // Reference to the User model
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'users',  // Name of the user collection/model
+      
+    },
+    name: { type: String, required: true },
+    username: { type: String, required: true },
+    dob: { type: Date, required: true },
+    age: { type: Number, required: true },
+    gender: { type: String, required: true },
+    profilePicUrl: { type: String, required: true },
   },
-  name: {
-    type: String,
-    required: true,
-  },
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  dob: {
-    type: Date,
-    required: true,
-  },
-  age: {
-    type: Number,
-    required: true,
-  },
-  gender: {
-    type: String,
-    enum: ['Male', 'Female', 'Other'],
-    required: true,
-  },
-  profilePicUrl: {
-    type: String,
-    required: true,
-  },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
-export const ProfileModel = mongoose.model('Profile', profileSchema);
+const ProfileModel = mongoose.model('Profile', ProfileSchema);
+export { ProfileModel };

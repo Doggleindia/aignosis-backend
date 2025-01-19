@@ -1,14 +1,14 @@
-// controllers/otpController.js
 import nodemailer from 'nodemailer';
 import { OtpModel } from '../model/otpModel.js';
-import dotenv from 'dotenv';
+import { UserModel } from '../model/userModel.js';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
 dotenv.config();
 
 // Gmail credentials from .env
 const { EMAIL_USER, EMAIL_PASS } = process.env;
 
-// Send OTP function
 export const sendOtp = async (req, res) => {
   const { email } = req.body;
 
@@ -16,7 +16,6 @@ export const sendOtp = async (req, res) => {
     return res.status(400).json({ message: 'Email is required.' });
   }
 
-  // Generate a 6-digit OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
   try {
@@ -50,7 +49,7 @@ export const sendOtp = async (req, res) => {
     await OtpModel.create({
       email,
       otp,
-      requestId: otp, // Use OTP as the requestId (you can change this to a different identifier if needed)
+      requestId: otp, // Use OTP as the requestId
     });
 
     res.status(200).json({
@@ -83,8 +82,18 @@ export const verifyOtp = async (req, res) => {
       return res.status(401).json({ message: 'Invalid OTP.' });
     }
 
+    // Check if the user already exists in the UserModel
+    let user = await UserModel.findOne({ email });
+    if (!user) {
+      // If user doesn't exist, create a new user
+      user = await UserModel.create({
+        email,
+        emailVerified: true, // Set the emailVerified flag to true after OTP verification
+      });
+    }
+
     // Generate a JWT token (for user authentication)
-    const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ email: user.email }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRATION || '1h',
     });
 
@@ -94,10 +103,10 @@ export const verifyOtp = async (req, res) => {
     res.status(200).json({
       message: 'OTP verified successfully.',
       token,
+      user: user,  // Return the user data
     });
   } catch (error) {
     console.error('Error verifying OTP:', error);
     res.status(500).json({ message: 'Error verifying OTP.', error: error.message });
   }
 };
-

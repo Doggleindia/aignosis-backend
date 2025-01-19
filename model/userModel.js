@@ -1,12 +1,18 @@
 import mongoose from 'mongoose';
 
-const userSchema = new mongoose.Schema(
-  {
-    phoneNumber: { type: String, required: true, unique: true }, // Unique phone number
-    createdAt: { type: Date, default: Date.now }, // Timestamp of user creation
-    testCount: { type: Number, default: 0 }, // Track the number of test attempts
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
   },
-  { timestamps: true }
-);
+  name: {
+    type: String,
+  },
+  emailVerified: {
+    type: Boolean,
+    default: false,
+  },
+}, { timestamps: true });
 
 export const UserModel = mongoose.model('User', userSchema);
