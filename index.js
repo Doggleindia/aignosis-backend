@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
 import { connectDB } from './config/db.js';
+import carrerRoutes from './routes/careerRoutes.js'
 
 
 // Load environment variables
@@ -33,6 +34,7 @@ app.use('/verifyJwt', authRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/profiles', profileRoutes);
+app.use('/api/career', carrerRoutes);
 
 // Health Check Endpoint
 app.get('/', (req, res) => {
