@@ -1,11 +1,11 @@
 import express from 'express';
-import { authenticateJWT } from '../middleware/authMiddleware.js';
-import { getProfiles, createProfile } from '../controller/profileController.js';
+import { addProfile, getProfiles } from '../controller/profileController.js';
+import { verifyToken } from '../middleware/authMiddleware.js';
+import upload from '../middleware/uploadMiddleware.js';
 
 const router = express.Router();
 
-// Secure Routes
-router.get('/', authenticateJWT, getProfiles);
-router.post('/', authenticateJWT, createProfile);
+router.post('/add', verifyToken, upload.single('profilePic'), addProfile);
+router.get('/', verifyToken, getProfiles);
 
 export default router;

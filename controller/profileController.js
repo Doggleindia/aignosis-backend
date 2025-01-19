@@ -1,30 +1,69 @@
-import { ProfileModel } from '../model/profileModel.js';
+import { ProfileModel } from '../model/ProfileModel.js';
+import cloudinary from '../config/cloudinary.js';
 
-export const getProfiles = async (req, res) => {
+// Add a new profile
+export const addProfile = async (req, res) => {
+  const { name, username, dob, age, gender } = req.body;
+  const userId = req.user.id;
+
+  // Check if file is uploaded
+  if (!req.file) {
+    return res.status(400).json({ message: 'Profile picture is required.' });
+  }
+
   try {
-    const profiles = await ProfileModel.find({ userId: req.user.id });
-    res.status(200).json(profiles);
+    // Check if user already has 5 profiles
+    const profileCount = await ProfileModel.countDocuments({ userId });
+    if (profileCount >= 5) {
+      return res.status(400).json({ message: 'Maximum of 5 profiles allowed.' });
+    }
+
+    // Upload profile picture to Cloudinary
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder: 'profiles' },
+      async (error, result) => {
+        if (error) {
+          console.error('Cloudinary upload error:', error);
+          return res.status(500).json({ message: 'Error uploading to Cloudinary.' });
+        }
+
+        // Create a new profile
+        try {
+          const profile = await ProfileModel.create({
+            userId,
+            name,
+            username,
+            dob,
+            age,
+            gender,
+            profilePicUrl: result.secure_url,
+          });
+
+          res.status(201).json({ message: 'Profile created successfully.', profile });
+        } catch (err) {
+          console.error('Error creating profile:', err);
+          res.status(500).json({ message: 'Error creating profile.', error: err.message });
+        }
+      }
+    );
+
+    // Pass the buffer data to Cloudinary
+    uploadStream.end(req.file.buffer);
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving profiles.', error: error.message });
+    console.error('Error adding profile:', error);
+    res.status(500).json({ message: 'Error adding profile.', error: error.message });
   }
 };
 
-export const createProfile = async (req, res) => {
-  const { name, dob } = req.body;
-
-  if (!name || !dob) {
-    return res.status(400).json({ message: 'Name and DOB are required.' });
-  }
+// Fetch profiles for a user
+export const getProfiles = async (req, res) => {
+  const userId = req.user.id;
 
   try {
-    const existingProfiles = await ProfileModel.find({ userId: req.user.id });
-    if (existingProfiles.length >= 5) {
-      return res.status(400).json({ message: 'Cannot create more than 5 profiles.' });
-    }
-
-    const profile = await ProfileModel.create({ userId: req.user.id, name, dob });
-    res.status(201).json(profile);
+    const profiles = await ProfileModel.find({ userId });
+    res.status(200).json({ profiles });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating profile.', error: error.message });
+    console.error('Error fetching profiles:', error);
+    res.status(500).json({ message: 'Error fetching profiles.', error: error.message });
   }
 };

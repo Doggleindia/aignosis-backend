@@ -1,38 +1,35 @@
+// server.js
 import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import authRoutes from './routes/authRoutes.js';
+import otpRoutes from './routes/otpRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
 import { connectDB } from './config/db.js';
-
+import testRoutes from './routes/testRoutes.js';
 
 // Load environment variables
 dotenv.config();
-//console.log('Razorpay Key Secret:', process.env.RZP_TEST);
-// console.log("all env url",process.env);  
+
 const app = express();
 const PORT = process.env.PORT || 5500;
 
 // Middleware
-app.use(cors()); // Enable CORS globally
-app.use(bodyParser.json());
-// Middleware to capture raw body for Razorpay Webhook
-app.use(bodyParser.raw({ type: 'application/json' }));
-
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
+app.use(bodyParser.json());  // For parsing JSON data
+app.use(bodyParser.urlencoded({ extended: true }));  // For parsing URL-encoded data
 
 // Connect to MongoDB
 connectDB();
 
-// Routes
-app.use('/verifyJwt', authRoutes);
-app.use('/api/auth', authRoutes);
+// API routes
+app.use('/api/otp', otpRoutes);
 app.use('/api/payment', paymentRoutes);
-app.use('/api/profiles', profileRoutes);
+app.use('/api/profiles', profileRoutes);  // Exclude verification for '/api/profiles'
+app.use('/api/test', testRoutes);
 
 // Health Check Endpoint
 app.get('/', (req, res) => {

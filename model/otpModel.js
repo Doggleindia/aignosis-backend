@@ -1,12 +1,24 @@
+// models/otpModel.js
 import mongoose from 'mongoose';
 
-const otpSchema = new mongoose.Schema(
-  {
-    phoneNumber: { type: String, required: true, unique: true },
-    requestId: { type: String, required: true }, // Store 2Factor's request ID
-    createdAt: { type: Date, default: Date.now, expires: 300 }, // Record expires in 5 minutes
+const OtpSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
   },
-  { timestamps: true }
-);
+  otp: {
+    type: String,
+    required: true,
+  },
+  requestId: {
+    type: String, // This will store the OTP or another identifier
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    expires: 300, // OTP expires in 5 minutes
+  },
+});
 
-export const OtpModel = mongoose.model('Otp', otpSchema);
+export const OtpModel = mongoose.model('Otp', OtpSchema);
