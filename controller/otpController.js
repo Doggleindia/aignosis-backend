@@ -88,7 +88,6 @@ export const verifyOtp = async (req, res) => {
       // If user doesn't exist, create a new user
       user = await UserModel.create({
         email,
-        phoneNumber: "",
         emailVerified: true, // Set the emailVerified flag to true after OTP verification
       });
     }    
