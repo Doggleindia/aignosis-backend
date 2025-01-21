@@ -1,4 +1,5 @@
 import { ProfileModel } from '../model/ProfileModel.js';
+import { UserModel } from '../model/userModel.js'; // Import the user model
 import cloudinary from '../config/cloudinary.js';
 
 // Add a new profile
@@ -52,8 +53,6 @@ export const addProfile = async (req, res) => {
   }
 };
 
-
-
 // Fetch profiles for a user
 export const getProfiles = async (req, res) => {
   const userId = req.user?.id;
@@ -63,7 +62,7 @@ export const getProfiles = async (req, res) => {
   }
 
   try {
-    const profiles = await ProfileModel.find({ userId }).populate('userId');  // Populate user details
+    const profiles = await ProfileModel.find({ userId }).populate('userId', 'name email'); // Populate user fields
     res.status(200).json({ profiles });
   } catch (error) {
     console.error('Error fetching profiles:', error);
@@ -71,3 +70,56 @@ export const getProfiles = async (req, res) => {
   }
 };
 
+// Update a profile
+export const updateProfile = async (req, res) => {
+  const { id } = req.params; // Profile ID from the URL
+  const { name, username, dob, age, gender } = req.body; // Fields to update
+  const userId = req.user?.id; // Get userId from the authenticated user's token
+
+  if (!userId) {
+      return res.status(400).json({ message: 'User ID is required.' });
+  }
+
+  try {
+      const updatedProfile = await ProfileModel.findByIdAndUpdate(
+          id,
+          { 
+              userId,  // Include userId in the update
+              name, 
+              username, 
+              dob, 
+              age, 
+              gender 
+          },
+          { new: true } // Return the updated document
+      );
+
+      if (!updatedProfile) {
+          return res.status(404).json({ message: 'Profile not found' });
+      }
+
+      res.status(200).json({ message: 'Profile updated successfully', profile: updatedProfile });
+  } catch (error) {
+      console.error('Error updating profile:', error);
+      res.status(500).json({ message: 'Error updating profile', error: error.message });
+  }
+};
+
+
+// Delete a profile
+export const deleteProfile = async (req, res) => {
+  const { id } = req.params; // Get profile ID from params
+
+  try {
+    const profile = await ProfileModel.findByIdAndDelete(id);
+
+    if (!profile) {
+      return res.status(404).json({ message: 'Profile not found.' });
+    }
+
+    res.status(200).json({ message: 'Profile deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting profile:', error);
+    res.status(500).json({ message: 'Error deleting profile.', error: error.message });
+  }
+};
