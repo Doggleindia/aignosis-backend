@@ -22,7 +22,7 @@ export const sendOtp = async (req, res) => {
     // Check if OTP for the given email already exists
     const existingOtp = await OtpModel.findOne({ email });
     if (existingOtp) {
-      return res.status(400).json({ message: 'OTP already sent to this email.' });
+      return res.status(400).json({ message: 'OTP already sent to this email.',status:true });
     }
 
     // Set up Nodemailer transporter with Gmail

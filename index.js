@@ -4,6 +4,7 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import {verifyJwt} from './controller/verifyJwt.js';
 import otpRoutes from './routes/otpRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
@@ -24,6 +25,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 connectDB();
 
 // API routes
+app.use('/verifyJwt', verifyJwt);
 app.use('/api/otp', otpRoutes);
 app.use('/api/payment', paymentRoutes);
 app.use('/api/profiles', profileRoutes);
