@@ -1,5 +1,6 @@
 import Razorpay from 'razorpay';
 import Payment from '../model/Payment.js';
+import {UserModel} from '../model/userModel.js';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
 dotenv.config();
