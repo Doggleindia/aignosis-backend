@@ -12,18 +12,30 @@ const razorpay = new Razorpay({
 
 // Create Order
 export const createOrder = async (req, res) => {
-    const { amount } = req.body;
-    const options = {
-        amount: amount * 100, // Convert to smallest currency unit
-        currency: "INR",
-        receipt: `receipt_${Date.now()}`,
-    };
-    try {
-        const order = await razorpay.orders.create(options);
-        res.status(201).json(order);
-    } catch (error) {
-        res.status(500).json({ error: 'Failed to create order' });
-    }
+  const { amount } = req.body;
+
+  if (!amount || isNaN(amount)) {
+      return res.status(400).json({ error: "Invalid amount provided" });
+  }
+
+  const options = {
+      amount: Math.round(amount * 100), // Convert to paise
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+  };
+
+  try {
+      console.log("Creating order with options:", options);
+      const order = await razorpay.orders.create(options);
+      console.log("Order created successfully:", order);
+      res.status(201).json(order);
+  } catch (error) {
+      console.error("Error while creating order:", error);
+      res.status(500).json({
+          error: "Failed to create order",
+          details: error.message || error,
+      });
+  }
 };
 
 // Verify Payment
