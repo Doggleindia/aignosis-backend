@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { TherapySessionModel } from '../model/TherapySessionModel.js';
 import { DoctorModel } from '../model/DoctorModel.js'; // Ensure this model exists
 import dotenv from 'dotenv';
+import mongoose from 'mongoose'; 
 
 dotenv.config();
 
@@ -35,11 +36,14 @@ router.post('/purchase', authenticateToken, async (req, res) => {
     return res.status(400).json({ message: 'All fields are required.' });
   }
 
-  const { id: userId, email } = req.user; // Extract `id` (userId) and `email` from the decoded token
+  const { id: userId, email } = req.user;
 
   try {
+    // Properly convert doctorId to ObjectId using 'new'
+    const doctorObjectId = new mongoose.Types.ObjectId(doctorId);
+
     // Check if the timing is already booked for the doctor
-    const existingSession = await TherapySessionModel.findOne({ doctorId, timing });
+    const existingSession = await TherapySessionModel.findOne({ doctorId: doctorObjectId, timing });
     if (existingSession) {
       return res.status(400).json({ message: 'This timing is already booked for the selected doctor.' });
     }
@@ -48,11 +52,11 @@ router.post('/purchase', authenticateToken, async (req, res) => {
     const session = await TherapySessionModel.create({
       userId,
       therapyName,
-      doctorId,
+      doctorId: doctorObjectId,
       timing,
     });
 
-    // Send confirmation email to the user
+    // Send confirmation email to the user (assuming you have a transporter setup)
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -63,7 +67,7 @@ router.post('/purchase', authenticateToken, async (req, res) => {
 
     const mailOptions = {
       from: EMAIL_USER,
-      to: email, // Use email extracted from the token
+      to: email,
       subject: 'Therapy Session Confirmation',
       text: `Dear User,\n\nYour therapy session has been successfully booked.\n\nTherapy Name: ${therapyName}\nTiming: ${timing}\n\nThank you for choosing our service!\n\nBest regards,\nAi.gnosis Team`,
     };
