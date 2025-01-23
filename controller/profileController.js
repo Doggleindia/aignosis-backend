@@ -1,6 +1,6 @@
-  import { ProfileModel } from '../model/profileModel.js';
-  import { UserModel } from '../model/userModel.js'; // Import the user model
-  import cloudinary from '../config/cloudinary.js';
+import { ProfileModel } from '../model/profile.js';
+import { UserModel } from '../model/userModel.js'; // Import the user model
+import cloudinary from '../config/cloudinary.js';
 
   // Add a new profile
   export const addProfile = async (req, res) => {

@@ -7,7 +7,7 @@ const paymentSchema = new mongoose.Schema({
     amount: Number,
     currency: String,
     status: String,
+    user_id: String, // Added field to store user ID
 });
 
-// Exporting the model using ES module export
 export default mongoose.model('Payment', paymentSchema);
