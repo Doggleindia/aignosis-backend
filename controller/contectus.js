@@ -16,10 +16,10 @@ const transporter = nodemailer.createTransport({
 
 // POST route to handle contact form submission and send email
 export const contactus = async (req, res) => {
-    const { name, phone, age, message } = req.body;
+    const { name, phone, age, message,city } = req.body;
 
     // Validation
-    if (!name || !phone || !age || !message) {
+    if (!name || !phone || !age || !message || !city) {
         return res.status(400).json({ error: 'All fields are required: name, phone, age, message.' });
     }
 
@@ -32,7 +32,7 @@ export const contactus = async (req, res) => {
     }
 
     // Save the submission (optional)
-    const submission = { id: contactSubmissions.length + 1, name, phone, age, message, submittedAt: new Date() };
+    const submission = { id: contactSubmissions.length + 1, name, phone, age,city, message, submittedAt: new Date() };
     contactSubmissions.push(submission);
 
     // Compose email
@@ -40,7 +40,7 @@ export const contactus = async (req, res) => {
         from: 'your-email@gmail.com', // Sender address
         to: 'recipient-email@gmail.com', // Recipient email (e.g., admin)
         subject: 'New Contact Form Submission',
-        text: `You have received a new contact form submission:\n\nName: ${name}\nPhone: ${phone}\nAge: ${age}\nMessage: ${message}`
+        text: `You have received a new contact form submission:\n\nName: ${name}\nPhone: ${phone}\nAge: ${age}\nCity: ${city}\nMessage: ${message}`
     };
 
     try {
