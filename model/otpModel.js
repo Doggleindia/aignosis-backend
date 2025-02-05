@@ -2,7 +2,7 @@
 import mongoose from 'mongoose';
 
 const OtpSchema = new mongoose.Schema({
-  email: {
+  phoneNumber: {
     type: String,
     required: true,
   },

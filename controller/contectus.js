@@ -49,7 +49,8 @@ export const contactus = async (req, res) => {
 
         res.status(201).json({
             message: 'Contact form submitted successfully and email sent!',
-            submission
+            submission,
+            status:200
         });
     } catch (error) {
         console.error('Error sending email:', error);

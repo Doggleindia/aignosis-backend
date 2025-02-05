@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
-  email: {
+  phoneNumber: {
     type: String,
     required: true,
     unique: true,
@@ -9,11 +9,10 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
   },
-  emailVerified: {
+  phoneNumberVerified: {
     type: Boolean,
     default: false,
   },
 }, { timestamps: true });
 
-const UserModel = mongoose.model('users', userSchema);
-export { UserModel };
+export const UserModel = mongoose.model('User', userSchema);
