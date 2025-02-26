@@ -5,7 +5,7 @@ const ProfileSchema = new mongoose.Schema(
     // Reference to the User model
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'users',  // Name of the user collection/model
+      ref: 'Userd',  // Name of the user collection/model
       required: true,
     },
     name: { type: String, required: true },

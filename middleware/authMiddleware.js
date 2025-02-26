@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
 
 // Middleware to verify JWT token
 export const verifyToken = (req, res, next) => {
