@@ -118,19 +118,21 @@ export const verifyPayment = async (req, res) => {
   }
     console.log(payment.phoneNumber,"phone number")
     const params = {
-      Message: `Your payment is successful! 🎉 Your appointment is confirmed. Book your slot with the doctor here: ${calendlyLink}. Thank you for choosing our service!`,
+      Message: `Your appointment is confirmed 🎉. Please Book your slot with our expert from the dashboard. Thank you for choosing our service! contact us at +918209860578`,
       PhoneNumber: payment.phoneNumber,
       MessageAttributes: {
-        "AWS.SNS.SMS.SenderID": {
-          DataType: "String",
-          StringValue: "AIGNOS",
-        },
-        "AWS.SNS.SMS.SMSType": {
-          DataType: "String",
-          StringValue: "Transactional",
-        },
+      "AWS.SNS.SMS.SenderID": {
+        DataType: "String",
+        StringValue: "AIGNOS",
+      },
+      "AWS.SNS.SMS.SMSType": {
+        DataType: "String",
+        StringValue: "Transactional",
+      },
       },
     };
+
+    await sns.publish(params).promise();
 
     try {
       await sns.publish(params).promise();
