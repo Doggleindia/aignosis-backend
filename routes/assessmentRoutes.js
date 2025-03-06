@@ -68,7 +68,7 @@ router.post('/purchase', authenticateToken, async (req, res) => {
     const mailOptions = {
       from: EMAIL_USER,
       to: email,
-      subject: 'Therapy Session Confirmation',
+      subject: 'Assessment Session Confirmation',
       text: `Dear User,\n\nYour Assessment session has been successfully booked.\n\nAssessment Name: ${therapyName}\nTiming: ${timing}\n\nThank you for choosing our service!\n\nBest regards,\nAi.gnosis Team`,
     };
 
@@ -81,7 +81,7 @@ router.post('/purchase', authenticateToken, async (req, res) => {
     });
 
     res.status(201).json({
-      message: 'Therapy session booked successfully.',
+      message: 'Assessment session booked successfully.',
       session,
     });
   } catch (error) {
