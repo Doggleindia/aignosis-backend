@@ -14,6 +14,7 @@ import assessmentRoutes from './routes/assessmentRoutes.js'; // New route
 import offerRoutes from './routes/offerRoutes.js';
 import careerRoutes from './routes/careerRoutes.js'
 import cardservicesRoutes from './routes/cardServiceRoutes.js'
+import flyerroutes from './routes/flyerroutes.js'
 import { connectDB } from './config/db.js';
 
 const app = express();
@@ -38,6 +39,7 @@ app.use('/api/assessment', assessmentRoutes); // New route
 app.use('/api/offer', offerRoutes);
 app.use('/api/career', careerRoutes);
 app.use('/api/service', cardservicesRoutes);
+app.use('/api/flyer', flyerroutes);
 
 // Health Check Endpoint
 app.get('/', (req, res) => {
