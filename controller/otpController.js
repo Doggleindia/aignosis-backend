@@ -47,8 +47,8 @@ export const sendOtp = async (req, res) => {
       },
     };
 
-    // Send OTP via AWS SNS
-    await sns.publish(params).promise();
+    // Send OTP via AWS SNS ( no dont send it, we're using firebase for that)
+    // await sns.publish(params).promise();
 
     res.status(200).json({ message: "OTP sent successfully", status: true });
   } catch (error) {
