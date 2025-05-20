@@ -73,10 +73,11 @@ export const verifyOtp = async (req, res) => {
       return res.status(401).json({ message: 'OTP session not found or expired.' });
     }
 
-    // Validate OTP
-    if (record.otp !== otp) {
-      return res.status(401).json({ message: 'Invalid OTP.' });
-    }
+    // NOTE: dont validate otp since we're using jwt mechanism from here, but otp is being generated using firebase
+    // // Validate OTP
+    // if (record.otp !== otp) {
+    //   return res.status(401).json({ message: 'Invalid OTP.' });
+    // }
 
     // Check if user exists
     let user = await UserModel.findOne({ phoneNumber });

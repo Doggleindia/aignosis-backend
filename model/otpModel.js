@@ -8,7 +8,7 @@ const OtpSchema = new mongoose.Schema({
   },
   otp: {
     type: String,
-    required: true,
+    required: false,
   },
   requestId: {
     type: String, // This will store the OTP or another identifier

@@ -18,7 +18,7 @@ export const verifyJwt = (req, res) => {
     res.status(200).json({
       success: true,
       message: 'Token is valid.',
-      user: decoded, // Optional: Include decoded user info if needed
+      user: decoded, // Optional: Include decoded user info if neededm
     });
   } catch (error) {
     res.status(401).json({ success: false, message: 'Invalid or expired token.', error: error.message });
