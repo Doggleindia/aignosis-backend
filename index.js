@@ -4,7 +4,7 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import {verifyJwt} from './controller/verifyJwt.js';
+import { verifyJwt } from './controller/verifyJwt.js';
 import otpRoutes from './routes/otpRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import profileRoutes from './routes/profileRoutes.js';
@@ -21,7 +21,10 @@ const app = express();
 const PORT = process.env.PORT || 5500;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://aignosis.in'], // Add allowed frontend origins
+  credentials: true, // Allow cookies or Authorization headers
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
