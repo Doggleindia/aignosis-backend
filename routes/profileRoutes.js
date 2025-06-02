@@ -11,7 +11,7 @@ router.post('/add', verifyToken, upload.single('profilePic'), addProfile);
 // Get all profiles for the authenticated user (protected route)
 router.get('/', verifyToken, getProfiles);
 
-router.put('/:id',verifyToken, updateProfile); // Update profile by ID
+router.put('/:id', verifyToken, upload.single('profilePic'), updateProfile); // Added upload middleware
 router.delete('/:id',verifyToken, deleteProfile); // Delete profile by ID
 
 export default router;
